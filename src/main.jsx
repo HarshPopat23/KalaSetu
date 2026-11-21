@@ -7,6 +7,7 @@ import { createRoot } from 'react-dom/client'
 import { acceptOffer, buyers, createDraft, inventory, isOfferExpired, offerValidityDays, operator, payout, publishProduct, seed, submitOffer } from './purchase.js'
 import { restoreOrders } from './fulfilment.js'
 import Orders from './Orders.jsx'
+import HomeHero from './HomeHero.jsx'
 import Documentation, { Instructions } from './Documentation.jsx'
 import { preparePhoto } from './photo.js'
 import './style.css'
@@ -415,44 +416,7 @@ function App({ setLanguage }) {
         </div>
 
         <main id="main-content" tabIndex={-1}>
-          {!pages.some(([id]) => id === page) && (
-            <section className="intro">
-              <div style={{ display: 'inline-block', marginBottom: '0.5rem' }}>
-                <span className="badge">🇮🇳 National E-Governance Initiative</span>
-              </div>
-              <h1>{t('Rural craft purchasing')}</h1>
-              <p>{t('Publish a craft listing at the Kendra, send offers as a buyer, and review them as the artisan.')}</p>
-
-              {/* Four Key Pillars */}
-              <div className="gov-hero-pillars">
-                <div className="gov-pillar-card">
-                  <div className="gov-pillar-icon">📍</div>
-                  <h3>Kendra Assisted Onboarding</h3>
-                  <p>Common Service Centre (CSC) Village Level Entrepreneurs assist rural artisans with biometric registration and product documentation.</p>
-                </div>
-                <div className="gov-pillar-card">
-                  <div className="gov-pillar-icon">🏷️</div>
-                  <h3>Standardized Cataloging</h3>
-                  <p>Quality inspection, photography, and clear cost-breakdown eliminate intermediary price exploitation.</p>
-                </div>
-                <div className="gov-pillar-card">
-                  <div className="gov-pillar-icon">🏢</div>
-                  <h3>GeM Public Procurement</h3>
-                  <p>Direct institutional purchase offers from District Handicraft Offices and State Emporiums with legally binding timelines.</p>
-                </div>
-                <div className="gov-pillar-card">
-                  <div className="gov-pillar-icon">💳</div>
-                  <h3>Direct Benefit Payout</h3>
-                  <p>Automated payment vouchers and DBT disbursement upon physical Kendra handover and quality verification.</p>
-                </div>
-              </div>
-
-              <div className="access-actions">
-                <a href="#docs">{t('Read the documentation')}</a>
-                <a href="#demo">{t('Open the demo')}</a>
-              </div>
-            </section>
-          )}
+          {!pages.some(([id]) => id === page) && <HomeHero />}
 
           {page === 'docs' && <Documentation topicSlug={topicSlug} print={print} />}
           {page === 'locator' && <Locator />}
