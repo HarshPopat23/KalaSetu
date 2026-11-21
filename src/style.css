@@ -103,7 +103,9 @@ body {
 }
 
 .gov-utility-container {
-  width: min(1200px, calc(100% - 2rem));
+  width: 100%;
+  box-sizing: border-box;
+  padding-inline: clamp(1rem, 2.5vw, 2.5rem);
   margin-inline: auto;
   display: flex;
   align-items: center;
@@ -196,7 +198,9 @@ body {
   background: #ffffff;
   border-bottom: 2px solid #e2e8f0;
   box-shadow: var(--shadow-sm);
-  padding: 0.85rem max(1rem, calc((100% - 1200px) / 2));
+  padding: 0.85rem clamp(1rem, 2.5vw, 2.5rem);
+  width: 100%;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -347,7 +351,9 @@ body {
 }
 
 .gov-nav-container {
-  width: min(1200px, calc(100% - 2rem));
+  width: 100%;
+  box-sizing: border-box;
+  padding-inline: clamp(1rem, 2.5vw, 2.5rem);
   margin-inline: auto;
   display: flex;
   align-items: center;
@@ -411,7 +417,9 @@ body {
 }
 
 .gov-ticker-container {
-  width: min(1200px, calc(100% - 2rem));
+  width: 100%;
+  box-sizing: border-box;
+  padding-inline: clamp(1rem, 2.5vw, 2.5rem);
   margin-inline: auto;
   display: flex;
   align-items: center;
@@ -444,7 +452,9 @@ body {
    Main Content Layout
    ========================================================================== */
 main {
-  width: min(1200px, calc(100% - 2rem));
+  width: 100%;
+  box-sizing: border-box;
+  padding-inline: clamp(1rem, 2.5vw, 2.5rem);
   margin-inline: auto;
   padding-bottom: 3.5rem;
 }
@@ -511,7 +521,7 @@ p {
 
 .intro > p {
   font-size: 1.1rem;
-  max-width: 75ch;
+  max-width: 100%;
   color: var(--text-main);
 }
 
@@ -993,7 +1003,7 @@ summary {
 }
 
 .locator input {
-  max-width: 40rem;
+  max-width: 100%;
 }
 
 .centre-map {
@@ -1087,11 +1097,11 @@ summary {
 
 .docs-article h1:focus { outline: none; }
 .docs-intro { font-size: 1.13em; line-height: 1.65; }
-.docs-intro, .docs-section { max-width: 72ch; }
+.docs-intro, .docs-section { max-width: 100%; }
 .docs-section { margin-top: 1.65rem; }
 
 .docs-photo {
-  max-width: 44rem;
+  max-width: 100%;
   margin: 1.5rem 0;
 }
 
@@ -1159,7 +1169,9 @@ body.high-contrast .docs-layout a { color: var(--green); }
 }
 
 .gov-footer-container {
-  width: min(1200px, calc(100% - 2rem));
+  width: 100%;
+  box-sizing: border-box;
+  padding-inline: clamp(1rem, 2.5vw, 2.5rem);
   margin-inline: auto;
 }
 
@@ -1223,7 +1235,9 @@ body.high-contrast .docs-layout a { color: var(--green); }
 
 /* Plain original footer retained for test compatibility */
 footer {
-  width: min(1200px, calc(100% - 2rem));
+  width: 100%;
+  box-sizing: border-box;
+  padding-inline: clamp(1rem, 2.5vw, 2.5rem);
   margin-inline: auto;
   padding: 1.5rem 0;
   color: #64748b;
