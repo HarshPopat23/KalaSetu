@@ -37,3 +37,15 @@ Purchase acceptance reserves stock in this prototype. The people, organizations,
 - **Kendra operator** can register an artisan using sample details and the artisan's consent. Select that profile before creating a listing. Switch to **Artisan** to see that profile's published listings, offers, and orders. Profiles and the selected profile are saved in the current browser. Earlier demo listings still belong to Meera Rabari.
 - **Language** switches the interface and guides between English, Hindi, and Gujarati and saves the selection. The preferred language on a profile is recorded on the registration slip. The operator can change the interface language independently.
 - **Step-by-step guides** covers the visit checklist and instructions for the artisan, operator, and buyer. Print the visit checklist, registration slip, published listing confirmation, purchase order, packing checklist once scheduled, handover receipt after collection, inspection record, or payment acknowledgement after simulated payment. Use the browser print dialog to print or save a PDF.
+
+## Verify the demo in a clean browser
+
+```sh
+npm ci
+npx playwright install chromium
+npm run test:e2e
+```
+
+The Playwright suite opens fresh Chromium contexts against the production build. It covers role switching, reload persistence, partial orders, expired offers, rejected quantities, locator links, narrow layouts, and cancelling or confirming **Reset demo**. Locator tests check the link destinations and encoded inputs the app controls. The browser clock advances in the expiry test so there is no wait.
+
+New offers expire seven days after sending. Expired offers remain visible in history and cannot create an order or reserve stock. Accepted orders and offers saved before deadlines were introduced retain their original behaviour.

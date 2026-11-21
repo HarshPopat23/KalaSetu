@@ -59,7 +59,14 @@ export function publishProduct(state, productId) {
   }
 }
 
-export function submitOffer(state, offer) {
+export const offerValidityDays = 7
+const millisecondsPerDay = 86_400_000
+
+export function isOfferExpired(offer, now = Date.now()) {
+  return offer.status === 'pending' && Number.isFinite(offer.expiresAt) && now >= offer.expiresAt
+}
+
+export function submitOffer(state, offer, now = Date.now()) {
   const product = state.products.find(item => item.id === offer.productId)
   if (product?.status !== 'published') throw new Error('Choose a published product.')
   if (!buyers.some(buyer => buyer.id === offer.buyerId)) throw new Error('Choose a demo buyer.')
@@ -73,12 +80,14 @@ export function submitOffer(state, offer) {
       offer.deduction < 0 || offer.deduction >= gross) {
     throw new Error('Enter a valid unit price and a deduction smaller than the gross amount.')
   }
-  return { ...state, offers: [...state.offers, { ...offer, status: 'pending' }] }
+  const expiresAt = now + offerValidityDays * millisecondsPerDay
+  return { ...state, offers: [...state.offers, { ...offer, status: 'pending', expiresAt }] }
 }
 
-export function acceptOffer(state, offerId) {
+export function acceptOffer(state, offerId, now = Date.now()) {
   const offer = state.offers.find(item => item.id === offerId)
   if (offer?.status !== 'pending') throw new Error('Only pending offers can be accepted.')
+  if (isOfferExpired(offer, now)) throw new Error('This offer has expired.')
   const product = state.products.find(item => item.id === offer.productId)
   if (!product || offer.quantity > inventory(state, product).available) {
     throw new Error('The offer exceeds the remaining stock.')
