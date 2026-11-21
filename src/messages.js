@@ -1,6 +1,14 @@
 // One English key per line, followed by Hindi and Gujarati.
 const rows = `
 Language|भाषा|ભાષા
+A path from the workshop to the buyer|कार्यशाला से खरीदार तक का रास्ता|કારખાનાથી ખરીદદાર સુધીનો માર્ગ
+Prepare a craft listing with Kendra assistance, compare purchase offers, and follow the order through collection, inspection, and payout.|केंद्र की मदद से शिल्प की सूची बनाएँ, खरीद प्रस्तावों की तुलना करें और संग्रह, निरीक्षण व भुगतान तक ऑर्डर की स्थिति देखें।|કેન્દ્રની મદદથી હસ્તકલાની નોંધ બનાવો, ખરીદીની ઑફરની સરખામણી કરો અને સંગ્રહ, તપાસ તથા ચુકવણી સુધી ઓર્ડરની સ્થિતિ જુઓ.
+Independent college prototype. Government participation and payments are simulated.|स्वतंत्र कॉलेज प्रोटोटाइप। सरकारी भागीदारी और भुगतान केवल सिमुलेशन हैं।|સ્વતંત્ર કૉલેજ પ્રોટોટાઇપ. સરકારી ભાગીદારી અને ચુકવણી સિમ્યુલેટેડ છે.
+Portrait of Narendra Modi|नरेंद्र मोदी का चित्र|નરેન્દ્ર મોદીનું ચિત્ર
+Pause background photos|पृष्ठभूमि की तस्वीरें रोकें|પૃષ્ઠભૂમિના ફોટા થોભાવો
+Play background photos|पृष्ठभूमि की तस्वीरें चलाएँ|પૃષ્ઠભૂમિના ફોટા ચલાવો
+Next background photo|पृष्ठभूमि की अगली तस्वीर|પૃષ્ઠભૂમિનો આગળનો ફોટો
+Photo credits|तस्वीरों के स्रोत|ફોટાના સ્રોત
 Main navigation|मुख्य नेविगेशन|મુખ્ય નેવિગેશન
 Docs|दस्तावेज़|દસ્તાવેજો
 Documentation topics|दस्तावेज़ के विषय|દસ્તાવેજોના વિષયો
