@@ -21,7 +21,7 @@ async function offer(page, name, quantity, unitPrice, deduction) {
 }
 
 test('a clean session switches roles, keeps a partial order on reload, records a rejection and resets', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/#demo')
   const baskets = listing(page, 'Handwoven baskets')
   const order = page.getByRole('article', { name: 'Order for Handwoven baskets' })
   await expect(page.getByRole('heading', { name: 'Kendra operator workspace' })).toBeVisible()
@@ -91,7 +91,7 @@ test('a clean session switches roles, keeps a partial order on reload, records a
 
 test('a pending offer expires in an open page and stays in history after reload', async ({ page }) => {
   await page.clock.install({ time: new Date('2030-10-10T09:00:00Z') })
-  await page.goto('/')
+  await page.goto('/#demo')
   await role(page, 'Buyer 1')
   await offer(page, 'Bandhani dupattas', 5, 450, 0)
   await role(page, 'Artisan')
@@ -109,8 +109,9 @@ test('a pending offer expires in an open page and stays in history after reload'
 
 test('locator links preserve address characters and fit a narrow mobile viewport', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 740 })
-  await page.goto('/')
-  await page.getByRole('link', { name: 'Find a Kendra' }).click()
+  await page.route('https://tile.openstreetmap.org/**', route => route.abort())
+  await page.goto('/#demo')
+  await page.getByRole('link', { name: 'Find Center' }).click()
   await expect(page).toHaveURL(/#locator$/)
   await page.getByLabel('Village, district, or PIN code').fill('ભુજ & 370001')
   for (const [name, query] of [
@@ -137,4 +138,71 @@ test('locator links preserve address characters and fit a narrow mobile viewport
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(320)
   await page.reload()
   await expect(page.locator('html')).toHaveAttribute('lang', 'gu')
+})
+
+test('navbar destinations separate docs, interactive map, demo and published photos', async ({ page }) => {
+  await page.route('https://tile.openstreetmap.org/**', route => route.abort())
+  await page.goto('/')
+  const nav = page.getByRole('navigation', { name: 'Main navigation' })
+  await expect(nav.getByRole('link')).toHaveCount(4)
+  await expect(page.getByText('Kendra operator workspace')).toHaveCount(0)
+  await expect(page.getByLabel('Product name')).toHaveCount(0)
+
+  await nav.getByRole('link', { name: 'Docs' }).click()
+  for (const title of ['What KalaSetu does', 'Who can use it', 'What happens after publication', 'From making a product to selling it']) {
+    await expect(page.getByRole('heading', { name: title })).toBeVisible()
+  }
+
+  await nav.getByRole('link', { name: 'Find Center' }).click()
+  await expect(page.locator('.centre-pin')).toHaveCount(3)
+  const map = page.locator('.centre-map')
+  await map.scrollIntoViewIfNeeded()
+  const pin = page.locator('.centre-pin').first()
+  const originalPosition = await pin.boundingBox()
+  await map.focus()
+  await page.keyboard.press('ArrowRight')
+  await expect.poll(async () => (await pin.boundingBox()).x).not.toBe(originalPosition.x)
+  const bhuj = page.locator('.centre-pin[title="Bhuj"]')
+  const patan = page.locator('.centre-pin[title="Patan"]')
+  const spacing = async () => Math.abs((await bhuj.boundingBox()).x - (await patan.boundingBox()).x)
+  const originalSpacing = await spacing()
+  await page.getByRole('button', { name: 'Zoom out' }).click()
+  await expect.poll(spacing).toBeLessThan(originalSpacing)
+  await page.getByLabel('Village, district, or PIN code').fill('370465')
+  await expect(page.locator('.centre-pin')).toHaveCount(1)
+  const centre = page.locator('.centre-results article')
+  await expect(centre).toContainText('Mandvi')
+  await expect(centre).toContainText('Product photography guidance')
+  await centre.getByRole('button', { name: 'Show on map' }).click()
+  await expect(centre.getByRole('button')).toHaveAttribute('aria-pressed', 'true')
+  await expect(centre.getByRole('link')).toHaveAttribute('href', /Mandvi.*370465/)
+
+
+  await nav.getByRole('link', { name: 'Listing', exact: true }).click()
+  await expect(page.getByRole('heading', { name: 'List your product' })).toBeVisible()
+  await page.getByLabel('Product name').fill('Clay lamps')
+  await page.getByLabel('Craft category').fill('Pottery')
+  await page.getByLabel('Quantity', { exact: true }).fill('8')
+  await page.getByLabel('Asking price per piece (₹)').fill('150')
+  const upload = page.getByLabel('Product photo (optional)')
+  await upload.setInputFiles({ name: 'bad.txt', mimeType: 'text/plain', buffer: Buffer.from('sample text') })
+  await expect(page.getByRole('alert')).toContainText('Choose a JPEG')
+  const image = await page.evaluate(() => {
+    const canvas = document.createElement('canvas')
+    const context = canvas.getContext('2d')
+    context.fillStyle = '#a65a34'
+    context.fillRect(0, 0, canvas.width, canvas.height)
+    return canvas.toDataURL().split(',')[1]
+  })
+  await upload.setInputFiles({ name: 'lamp.png', mimeType: 'image/png', buffer: Buffer.from(image, 'base64') })
+  await expect(page.getByRole('img', { name: 'Product photo preview' })).toBeVisible()
+  await role(page, 'Save draft')
+  await listing(page, 'Clay lamps').getByRole('button', { name: 'Publish listing' }).click()
+  await page.reload()
+  await expect(listing(page, 'Clay lamps').getByRole('img')).toBeVisible()
+  await nav.getByRole('link', { name: 'Demo' }).click()
+  await expect(page.getByRole('heading', { name: 'Demo walkthrough' })).toBeVisible()
+  await expect(page.getByLabel('Product photo (optional)')).toHaveCount(0)
+  await role(page, 'Buyer 1')
+  await expect(listing(page, 'Clay lamps').getByRole('img')).toBeVisible()
 })

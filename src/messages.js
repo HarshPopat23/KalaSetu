@@ -1,6 +1,33 @@
 // One English key per line, followed by Hindi and Gujarati.
 const rows = `
 Language|भाषा|ભાષા
+Main navigation|मुख्य नेविगेशन|મુખ્ય નેવિગેશન
+Docs|दस्तावेज़|દસ્તાવેજો
+Find Center|केंद्र खोजें|કેન્દ્ર શોધો
+Demo|डेमो|ડેમો
+Listing|उत्पाद सूची|વેચાણ નોંધ
+Read the documentation|दस्तावेज़ पढ़ें|દસ્તાવેજો વાંચો
+Open the demo|डेमो खोलें|ડેમો ખોલો
+KalaSetu documentation|कलासेतु दस्तावेज़|કલાસેતુ દસ્તાવેજો
+List your product|अपना उत्पाद सूचीबद्ध करें|તમારું ઉત્પાદન નોંધાવો
+Listing workspace|सूची कार्यक्षेत्र|વેચાણ નોંધનું કાર્યક્ષેત્ર
+Demo walkthrough|डेमो के चरण|ડેમોનાં પગલાં
+From making a product to selling it|उत्पाद बनाने से बेचने तक|ઉત્પાદન બનાવવાથી વેચવા સુધી
+Product photo (optional)|उत्पाद की तस्वीर (वैकल्पिक)|ઉત્પાદનનો ફોટો (વૈકલ્પિક)
+Product photo preview|उत्पाद की तस्वीर का पूर्वावलोकन|ઉત્પાદનના ફોટાની ઝલક
+Choose a JPEG, PNG or WebP image up to 5 MB.|5 MB तक की JPEG, PNG या WebP तस्वीर चुनें।|5 MB સુધીનો JPEG, PNG અથવા WebP ફોટો પસંદ કરો.
+This image could not be opened.|यह तस्वीर नहीं खुल सकी।|આ ફોટો ખોલી શકાયો નહીં.
+Map tiles are unavailable. Centre pins, cards and directions links are still available.|नक्शे की पृष्ठभूमि उपलब्ध नहीं है। केंद्र के निशान, विवरण और दिशा लिंक उपलब्ध हैं।|નકશાની પૃષ્ઠભૂમિ ઉપલબ્ધ નથી. કેન્દ્રના નિશાન, વિગતો અને માર્ગની લિંક્સ ઉપલબ્ધ છે.
+Interactive centre map|केंद्रों का इंटरैक्टिव नक्शा|કેન્દ્રોનો ઇન્ટરેક્ટિવ નકશો
+Demo centre|नमूना केंद्र|નમૂનાનું કેન્દ્ર
+Show on map|नक्शे पर दिखाएँ|નકશા પર બતાવો
+Directions to locality|इलाके तक पहुँचने का रास्ता|વિસ્તાર સુધીનો રસ્તો
+Sample centres are marked at locality level. Confirm real addresses and hours through the external directory.|नमूना केंद्र इलाके के स्तर पर दिखाए गए हैं। वास्तविक पते और समय बाहरी निर्देशिका से जाँचें।|નમૂનાનાં કેન્દ્રો વિસ્તાર પ્રમાણે દર્શાવ્યાં છે. સાચાં સરનામાં અને સમય બહારની ડિરેક્ટરીમાં તપાસો.
+No sample centres match. Use the external search for more locations.|कोई नमूना केंद्र नहीं मिला। अन्य जगहों के लिए बाहरी खोज उपयोग करें।|કોઈ નમૂનાનું કેન્દ્ર મળ્યું નહીં. વધુ સ્થળો માટે બહારની શોધ વાપરો.
+Hours and contact details: confirm with the actual centre.|समय और संपर्क की जानकारी वास्तविक केंद्र से लें।|સમય અને સંપર્કની વિગતો વાસ્તવિક કેન્દ્ર પાસેથી મેળવો.
+Assisted registration, listing review, and demo collection.|पंजीकरण में सहायता, सूची की समीक्षा और डेमो संग्रह।|નોંધણીમાં મદદ, નોંધની સમીક્ષા અને ડેમોમાં માલની પ્રાપ્તિ.
+Product photography guidance and listing assistance.|उत्पाद की तस्वीर और सूची बनाने में मदद।|ઉત્પાદનના ફોટા અને નોંધ બનાવવા માટે મદદ.
+Assisted registration, pricing guidance, and printouts.|पंजीकरण और कीमत तय करने में मदद तथा प्रिंटआउट।|નોંધણી અને કિંમત નક્કી કરવામાં મદદ તથા પ્રિન્ટઆઉટ.
 College demo · Simulated purchases|कॉलेज डेमो · नकली खरीद प्रक्रिया|કૉલેજ ડેમો · ખરીદીનું નિદર્શન
 Rural craft purchasing|ग्रामीण हस्तशिल्प की खरीद|ગ્રામીણ હસ્તકલાની ખરીદી
 Publish a craft listing at the Kendra, send offers as a buyer, and review them as the artisan.|केंद्र पर शिल्प की सूची प्रकाशित करें, खरीदार बनकर प्रस्ताव भेजें और कारीगर बनकर उन्हें देखें।|કેન્દ્ર પર હસ્તકલાની વેચાણ નોંધ પ્રકાશિત કરો, ખરીદદાર તરીકે પ્રસ્તાવ મોકલો અને કારીગર તરીકે તે જુઓ.

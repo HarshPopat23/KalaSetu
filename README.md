@@ -49,3 +49,10 @@ npm run test:e2e
 The Playwright suite opens fresh Chromium contexts against the production build. It covers role switching, reload persistence, partial orders, expired offers, rejected quantities, locator links, narrow layouts, and cancelling or confirming **Reset demo**. Locator tests check the link destinations and encoded inputs the app controls. The browser clock advances in the expiry test so there is no wait.
 
 New offers expire seven days after sending. Expired offers remain visible in history and cannot create an order or reserve stock. Accepted orders and offers saved before deadlines were introduced retain their original behaviour.
+
+## Navbar
+
+- **Docs** explains the participants, purchase workflow, pricing, and steps from making a craft to receiving a payout.
+- **Find Center** uses interactive OpenStreetMap tiles with zoom, drag, and markers. The three bundled centre cards describe sample localities. Use the external directory to find real centres and confirm their addresses and hours. Live tiles require internet access.
+- **Demo** contains role switching, the existing seeded workspace and order flow, and a numeric walkthrough.
+- **Listing** contains the artisan profile selector, draft form, publication controls, and listing guide. JPEG, PNG, or WebP photos up to 5 MB are resized before being saved in browser storage. Photos are available to demo roles in the same browser.
