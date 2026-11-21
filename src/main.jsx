@@ -8,6 +8,7 @@ import { acceptOffer, buyers, createDraft, inventory, isOfferExpired, offerValid
 import { restoreOrders } from './fulfilment.js'
 import Orders from './Orders.jsx'
 import HomeHero from './HomeHero.jsx'
+import HomeSections from './HomeSections.jsx'
 import Documentation, { Instructions } from './Documentation.jsx'
 import { preparePhoto } from './photo.js'
 import './style.css'
@@ -416,7 +417,7 @@ function App({ setLanguage }) {
         </div>
 
         <main id="main-content" tabIndex={-1}>
-          {!pages.some(([id]) => id === page) && <HomeHero />}
+          {!pages.some(([id]) => id === page) && <><HomeHero /><HomeSections /></>}
 
           {page === 'docs' && <Documentation topicSlug={topicSlug} print={print} />}
           {page === 'locator' && <Locator />}
