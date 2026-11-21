@@ -1,6 +1,42 @@
 // One English key per line, followed by Hindi and Gujarati.
 const rows = `
 Language|भाषा|ભાષા
+KalaSetu at a glance|कलासेतु एक नज़र में|કલાસેતુ એક નજરમાં
+Sample product listings|नमूना उत्पाद सूचियाँ|નમૂનાની ઉત્પાદન સૂચિઓ
+Simulated buyers|डेमो खरीदार|ડેમો ખરીદદારો
+Participant roles|प्रतिभागियों की भूमिकाएँ|ભાગ લેનારની ભૂમિકાઓ
+About KalaSetu|कलासेतु के बारे में|કલાસેતુ વિશે
+Who KalaSetu is for|कलासेतु किसके लिए है|કલાસેતુ કોના માટે છે
+For artisans|कारीगरों के लिए|કારીગરો માટે
+For Kendra operators|केंद्र संचालकों के लिए|કેન્દ્ર સંચાલકો માટે
+For buyers|खरीदारों के लिए|ખરીદદારો માટે
+From workshop to payout|कार्यशाला से भुगतान तक|કારખાનાથી ચુકવણી સુધી
+Prepare the product|उत्पाद तैयार करें|ઉત્પાદન તૈયાર કરો
+Publish a listing|सूची प्रकाशित करें|સૂચિ પ્રકાશિત કરો
+Compare purchase offers|खरीद प्रस्तावों की तुलना करें|ખરીદીની ઑફરની સરખામણી કરો
+Complete the order|ऑर्डर पूरा करें|ઓર્ડર પૂર્ણ કરો
+Guides and tools|मार्गदर्शिकाएँ और उपकरण|માર્ગદર્શિકા અને સાધનો
+Prepare a craft for sale|शिल्प को बिक्री के लिए तैयार करें|હસ્તકલા વેચાણ માટે તૈયાર કરો
+Find a centre|केंद्र ढूँढें|કેન્દ્ર શોધો
+Create a listing|सूची बनाएँ|સૂચિ બનાવો
+Try the purchase demo|खरीद डेमो आज़माएँ|ખરીદીનો ડેમો અજમાવો
+Compare offers|प्रस्तावों की तुलना करें|ઑફરની સરખામણી કરો
+Track inspection and payout|निरीक्षण और भुगतान देखें|તપાસ અને ચુકવણી જુઓ
+From the craft workshop|शिल्प कार्यशाला से|હસ્તકલાના કારખાનામાંથી
+Bandhani textiles|बंधनी वस्त्र|બાંધણીના કાપડ
+Handmade pottery|हस्तनिर्मित मिट्टी के बर्तन|હાથથી બનાવેલાં માટીનાં વાસણો
+Terracotta lamps|मिट्टी के दीये|માટીના દીવા
+Frequently asked questions|अक्सर पूछे जाने वाले प्रश्न|વારંવાર પૂછાતા પ્રશ્નો
+Is KalaSetu a live government scheme?|क्या कलासेतु एक चालू सरकारी योजना है?|શું કલાસેતુ ચાલુ સરકારી યોજના છે?
+What should I take to a Kendra?|केंद्र पर क्या लेकर जाऊँ?|કેન્દ્ર પર શું લઈ જવું?
+What happens if some pieces fail inspection?|कुछ वस्तुएँ निरीक्षण में असफल हों तो क्या होगा?|અમુક વસ્તુઓ તપાસમાં નિષ્ફળ જાય તો શું થાય?
+Where are my listings saved?|मेरी सूचियाँ कहाँ सहेजी जाती हैं?|મારી સૂચિઓ ક્યાં સાચવાય છે?
+Explore the project|परियोजना देखें|પ્રોજેક્ટ જુઓ
+Documentation|दस्तावेज़|દસ્તાવેજો
+Interactive demo|इंटरैक्टिव डेमो|ઇન્ટરેક્ટિવ ડેમો
+Browse the guides|मार्गदर्शिकाएँ देखें|માર્ગદર્શિકા જુઓ
+Try a sample order|नमूना ऑर्डर आज़माएँ|નમૂનાનો ઓર્ડર અજમાવો
+View the source code|स्रोत कोड देखें|સોર્સ કોડ જુઓ
 A path from the workshop to the buyer|कार्यशाला से खरीदार तक का रास्ता|કારખાનાથી ખરીદદાર સુધીનો માર્ગ
 Prepare a craft listing with Kendra assistance, compare purchase offers, and follow the order through collection, inspection, and payout.|केंद्र की मदद से शिल्प की सूची बनाएँ, खरीद प्रस्तावों की तुलना करें और संग्रह, निरीक्षण व भुगतान तक ऑर्डर की स्थिति देखें।|કેન્દ્રની મદદથી હસ્તકલાની નોંધ બનાવો, ખરીદીની ઑફરની સરખામણી કરો અને સંગ્રહ, તપાસ તથા ચુકવણી સુધી ઓર્ડરની સ્થિતિ જુઓ.
 Independent college prototype. Government participation and payments are simulated.|स्वतंत्र कॉलेज प्रोटोटाइप। सरकारी भागीदारी और भुगतान केवल सिमुलेशन हैं।|સ્વતંત્ર કૉલેજ પ્રોટોટાઇપ. સરકારી ભાગીદારી અને ચુકવણી સિમ્યુલેટેડ છે.
