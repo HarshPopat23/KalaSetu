@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { acceptOffer, artisan, buyers, createDraft, inventory, operator, payout, publishProduct, seed, submitOffer } from './purchase.js'
+import { restoreOrders } from './fulfilment.js'
+import Orders from './Orders.jsx'
 import './style.css'
 
 const storageKey = 'kalasetu-purchase-v1'
@@ -15,7 +17,7 @@ const roles = [
 function loadState() {
   try {
     const saved = JSON.parse(localStorage.getItem(storageKey))
-    if (Array.isArray(saved?.products) && Array.isArray(saved?.offers)) return saved
+    if (Array.isArray(saved?.products) && Array.isArray(saved?.offers)) return restoreOrders(saved)
   } catch {
     // The demo can still run when browser storage is unavailable.
   }
@@ -23,7 +25,7 @@ function loadState() {
 }
 
 function ProductCard({ product, state, children }) {
-  const { available, reserved } = inventory(state, product)
+  const { available, reserved, purchased, rejected } = inventory(state, product)
   return (
     <article className="card">
       <div className="card-top"><span>{product.category}</span><span className="badge">{product.status}</span></div>
@@ -32,6 +34,8 @@ function ProductCard({ product, state, children }) {
       <dl className="stock">
         <div><dt>Available</dt><dd>{available}</dd></div>
         <div><dt>Reserved</dt><dd>{reserved}</dd></div>
+        {purchased > 0 && <div><dt>Purchased</dt><dd>{purchased}</dd></div>}
+        {rejected > 0 && <div><dt>Held for return</dt><dd>{rejected}</dd></div>}
       </dl>
       {children}
     </article>
@@ -94,20 +98,23 @@ function App() {
   const isArtisan = role === 'artisan'
   const products = state.products.filter(product => isOperator || product.status === 'published')
 
-  function update(change, message) {
-    let next
-    try {
-      next = change(state)
-    } catch (error) {
-      setFeedback({ error: true, text: error.message })
-      return false
-    }
+  function commit(next) {
     setState(next)
     try {
       localStorage.setItem(storageKey, JSON.stringify(next))
-      setFeedback({ text: message })
+      return true
     } catch {
-      setFeedback({ text: message + ' Browser storage is unavailable. Changes last until reload.' })
+      return false
+    }
+  }
+
+  function update(change, message) {
+    try {
+      const saved = commit(change(state))
+      setFeedback({ text: saved ? message : message + ' Browser storage is unavailable. Changes last until reload.' })
+    } catch (error) {
+      setFeedback({ error: true, text: error.message })
+      return false
     }
     return true
   }
@@ -170,7 +177,7 @@ function App() {
               <p>{current.name}{isOperator ? ' · ' + operator.centre : isArtisan ? ' · ' + artisan.location : ''}</p>
             </div>
             <button className="secondary reset" onClick={() => {
-              if (window.confirm('Reset all listings and offers to the demo defaults?')) {
+              if (window.confirm('Reset all listings, offers, and orders to the demo defaults?')) {
                 update(() => seed, 'Demo reset.')
                 setOfferProduct(null)
               }
@@ -203,15 +210,19 @@ function App() {
                     </>
                   )}
                   {offers.length > 0 && <OfferTable offers={offers} available={available}
-                    onAccept={isArtisan ? id => update(currentState => acceptOffer(currentState, id), 'Offer accepted. Stock reserved.') : undefined} />}
+                    onAccept={isArtisan ? id => update(currentState => acceptOffer(currentState, id), 'Offer accepted. Purchase order created and stock reserved.') : undefined} />}
                   {isArtisan && offers.length === 0 && <p>No offers yet.</p>}
                 </ProductCard>
               )
             })}
           </div>
         </section>
+        <Orders state={state} role={role} money={money} update={change => {
+          const saved = commit(change(state))
+          setFeedback(saved ? null : { text: 'Browser storage is unavailable. Changes last until reload.' })
+        }} />
       </main>
-      <footer>Demo listings and offers are saved in this browser.</footer>
+      <footer>Demo listings, offers, and orders are saved in this browser.</footer>
     </>
   )
 }
