@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 
 function role(page, name) {
-  return page.getByRole('button', { name, exact: true }).click()
+  return page.getByRole('button', { name: new RegExp(name + '$') }).click()
 }
 
 function listing(page, name) {
@@ -149,9 +149,8 @@ test('navbar destinations separate docs, interactive map, demo and published pho
   await expect(page.getByLabel('Product name')).toHaveCount(0)
 
   await nav.getByRole('link', { name: 'Docs' }).click()
-  for (const title of ['What KalaSetu does', 'Who can use it', 'What happens after publication', 'From making a product to selling it']) {
-    await expect(page.getByRole('heading', { name: title })).toBeVisible()
-  }
+  await expect(page.getByRole('heading', { name: 'What KalaSetu does' })).toBeVisible()
+  await expect(page.getByRole('navigation', { name: 'Documentation topics' })).toBeVisible()
 
   await nav.getByRole('link', { name: 'Find Center' }).click()
   await expect(page.locator('.centre-pin')).toHaveCount(3)
@@ -178,7 +177,7 @@ test('navbar destinations separate docs, interactive map, demo and published pho
   await expect(centre.getByRole('link')).toHaveAttribute('href', /Mandvi.*370465/)
 
 
-  await nav.getByRole('link', { name: 'Listing', exact: true }).click()
+  await nav.getByRole('link', { name: /Listing$/ }).click()
   await expect(page.getByRole('heading', { name: 'List your product' })).toBeVisible()
   await page.getByLabel('Product name').fill('Clay lamps')
   await page.getByLabel('Craft category').fill('Pottery')

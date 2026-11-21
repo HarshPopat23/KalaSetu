@@ -1,17 +1,8 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
+import { Guides } from './Access.jsx'
+import { groups, topics } from './docs/topics.js'
+import { photos } from './docs/photos.js'
 import { useLocale } from './locale.jsx'
-
-const sections = [
-  ['What KalaSetu does', 'KalaSetu demonstrates assisted purchasing for rural crafts. It connects the person making the product, a Kendra operator who helps prepare the listing, and simulated public-sector buyers who make purchase offers. A buyer can later allocate inspected stock to the example exhibition.'],
-  ['Who can use it', 'Individual artisans, family workshops, and craft groups can use the artisan journey to prepare products and review offers. A group should agree who represents it, who owns the stock, and how proceeds are shared before listing.'],
-  ['Kendra operators', 'An operator can register a sample artisan with consent, select their profile, check product details with them, and print records. The operator helps enter the information. The artisan decides whether to accept an offer.'],
-  ['Buyers and evaluators', 'The two demo buyers represent a district office and a craft emporium. Each can make offers and manage its own orders. A visitor or evaluator can switch between roles to see how the same transaction appears to each participant.'],
-  ['Accounts, access, and records', 'The application is a college prototype. Profiles, listings, photographs, orders, and payment status are stored in the current browser. Role switching simulates different participants. A real service would need verified identities, authorization, shared storage, procurement rules, and payment integration.'],
-  ['What happens after publication', 'Buyers can see published listings and propose a quantity, unit price, and deduction. Compare offers using the quantity and net payout as well as the unit price. New offers expire after seven days. Acceptance creates a purchase order and reserves the offered quantity, leaving the rest available.'],
-  ['How to compare offers', 'Net payout equals quantity × unit price minus the deduction. For example, 5 baskets at ₹320 with a ₹50 deduction yield ₹1,550. If two buyers request different quantities, compare the net amount per unit as well as total payout. A higher total may simply mean the buyer wants more pieces.'],
-  ['Collection, inspection, and payout', 'The buyer schedules collection and records handover at the Kendra. During inspection the buyer records how many pieces were accepted and explains any rejection. The payout is based on accepted pieces minus a proportional share of the deduction. Rejected items remain held for return and cannot be allocated to resale.'],
-  ['After the artisan is paid', 'The buyer marks payment as recorded in the demo. The artisan and operator can view its status and print the acknowledgement. The buyer allocates accepted units to the exhibition. The artisan payout is tracked independently of later resale.'],
-]
 
 const listingSteps = [
   'Choose one product and define the unit you are selling. Keep the materials, size, colour, and finish consistent across the batch.',
@@ -46,18 +37,78 @@ export function Instructions({ variant }) {
   )
 }
 
-export default function Documentation() {
-  const { t } = useLocale()
+const topicRoute = slug => '#docs/' + slug
+const slugs = groups.flatMap(([, entries]) => entries)
+
+function TopicPhoto({ photo }) {
+  const { language, t } = useLocale()
+  const [licenseName, licenseUrl] = photo.license
   return (
-    <section className="documentation">
-      <h1>{t('KalaSetu documentation')}</h1>
-      {sections.map(([title, body]) => (
-        <section key={title}>
-          <h2>{t(title)}</h2>
-          <p>{t(body)}</p>
-        </section>
-      ))}
-      <Instructions />
-    </section>
+    <figure className="docs-photo">
+      <img src={photo.src} alt={photo.alt} width={photo.width} height={photo.height} />
+      <figcaption lang="en">
+        {photo.caption}{' '}
+        <a href={photo.source}>{photo.author}</a>{' · '}
+        <a href={licenseUrl}>{licenseName}</a>{' · '}
+        <span lang={language}>{t('Resized for KalaSetu')}</span>
+      </figcaption>
+    </figure>
+  )
+}
+
+export default function Documentation({ topicSlug, print }) {
+  const { t } = useLocale()
+  const heading = useRef(null)
+  const slug = topicSlug || 'overview'
+  const index = slugs.indexOf(slug)
+  const topic = index >= 0 ? topics[slug] : undefined
+  const previous = slugs[index - 1]
+  const next = index >= 0 ? slugs[index + 1] : undefined
+
+  useEffect(() => {
+    heading.current?.focus()
+  }, [slug])
+
+  return (
+    <div className="docs-layout">
+      <aside className="docs-sidebar">
+        <nav aria-label={t('Documentation topics')}>
+          <a className="docs-sidebar-title" href="#docs">{t('KalaSetu documentation')}</a>
+          {groups.map(([label, entries]) => (
+            <details key={label} open={entries.includes(slug)}>
+              <summary>{t(label)}</summary>
+              <ul>
+                {entries.map(id => (
+                  <li key={id}>
+                    <a href={topicRoute(id)} aria-current={id === slug ? 'page' : undefined}>{t(topics[id].title)}</a>
+                  </li>
+                ))}
+              </ul>
+            </details>
+          ))}
+        </nav>
+      </aside>
+      <article className="docs-article" aria-labelledby="docs-topic-title">
+        <h1 id="docs-topic-title" tabIndex={-1} ref={heading}>{t(topic?.title ?? 'Documentation page not found')}</h1>
+        {topic ? (
+          <>
+            <p className="docs-intro" lang="en">{topic.intro}</p>
+            <TopicPhoto photo={photos[topic.photo]} />
+            {topic.sections.map(([title, body]) => (
+              <section className="docs-section" key={title} lang="en">
+                <h2>{title}</h2>
+                <p>{body}</p>
+              </section>
+            ))}
+            {topic.action && <p><a href={topic.action[0]}>{t(topic.action[1])}</a></p>}
+            {slug === 'product-to-sale' && <Guides print={print} />}
+            <nav className="docs-pagination" aria-label={t('Adjacent documentation pages')}>
+              {previous && <a href={topicRoute(previous)} rel="prev">{t('Previous')}: {t(topics[previous].title)}</a>}
+              {next && <a href={topicRoute(next)} rel="next">{t('Next')}: {t(topics[next].title)}</a>}
+            </nav>
+          </>
+        ) : <p><a href="#docs">{t('Back to documentation')}</a></p>}
+      </article>
+    </div>
   )
 }
