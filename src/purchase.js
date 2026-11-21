@@ -1,3 +1,5 @@
+import { createOrder, restoreOrders } from './fulfilment.js'
+
 export const artisan = { id: 'artisan-1', name: 'Meera Rabari', location: 'Bhuj, Kutch' }
 export const operator = { id: 'operator-1', name: 'Kiran Patel', centre: 'Bhuj Jan Suvidha Kendra' }
 export const buyers = [
@@ -12,6 +14,7 @@ export const seed = {
     { id: 'baskets', name: 'Handwoven baskets', category: 'Basketry', stock: 12, askingPrice: 28000, status: 'draft' },
   ],
   offers: [],
+  orders: [],
 }
 
 export function payout(offer) {
@@ -19,10 +22,21 @@ export function payout(offer) {
 }
 
 export function inventory(state, product) {
-  const reserved = state.offers
-    .filter(offer => offer.productId === product.id && offer.status === 'accepted')
-    .reduce((sum, offer) => sum + offer.quantity, 0)
-  return { available: product.stock - reserved, reserved }
+  let available = product.stock
+  let reserved = 0
+  let purchased = 0
+  let rejected = 0
+  for (const order of restoreOrders(state).orders) {
+    if (order.productId !== product.id) continue
+    available -= order.quantity
+    if (order.inspection) {
+      purchased += order.inspection.accepted
+      rejected += order.inspection.rejected
+    } else {
+      reserved += order.quantity
+    }
+  }
+  return { available, reserved, purchased, rejected }
 }
 
 export function createDraft(state, product) {
@@ -72,5 +86,6 @@ export function acceptOffer(state, offerId) {
   return {
     ...state,
     offers: state.offers.map(item => item.id === offerId ? { ...item, status: 'accepted' } : item),
+    orders: [...restoreOrders(state).orders, createOrder(offer)],
   }
 }

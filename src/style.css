@@ -76,3 +76,8 @@ input { width: 100%; min-height: 44px; padding: .5rem; border: 1px solid #898d82
 .feedback { border-left: 4px solid var(--green); padding: .6rem .8rem; background: #e7ecdf; }
 .feedback.error { border-color: #9e3d27; background: #f6e6df; }
 footer { padding: 2rem 0; color: #4d594c; font-size: .9rem; }
+.order-list { display: grid; gap: 1rem; }
+.order { overflow-wrap: anywhere; }
+.order .card-top h3 { margin: 0; }
+.order-reference { font-size: .88rem; }
+.resale { border-top: 1px solid var(--border); margin-top: 1rem; padding-top: 1rem; }

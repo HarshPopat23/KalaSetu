@@ -19,15 +19,15 @@ test('competing offers show net payout and acceptance reserves only the offered 
   const withOffers = submitOffer(submitOffer(published, first), second)
   const baskets = published.products.find(item => item.id === 'baskets')
   assert.equal(payout(second), 319000)
-  assert.deepEqual(inventory(withOffers, baskets), { available: 12, reserved: 0 })
+  assert.deepEqual(inventory(withOffers, baskets), { available: 12, reserved: 0, purchased: 0, rejected: 0 })
   const accepted = acceptOffer(withOffers, first.id)
-  assert.deepEqual(inventory(accepted, baskets), { available: 7, reserved: 5 })
+  assert.deepEqual(inventory(accepted, baskets), { available: 7, reserved: 5, purchased: 0, rejected: 0 })
   assert.throws(() => acceptOffer(accepted, first.id), /pending/)
   assert.throws(() => acceptOffer(accepted, second.id), /remaining stock/)
   const remainder = { ...second, id: 'remaining', quantity: 7 }
   const soldOut = acceptOffer(submitOffer(accepted, remainder), remainder.id)
-  assert.deepEqual(inventory(soldOut, baskets), { available: 0, reserved: 12 })
-  assert.deepEqual(inventory(soldOut, published.products[0]), { available: 30, reserved: 0 })
+  assert.deepEqual(inventory(soldOut, baskets), { available: 0, reserved: 12, purchased: 0, rejected: 0 })
+  assert.deepEqual(inventory(soldOut, published.products[0]), { available: 30, reserved: 0, purchased: 0, rejected: 0 })
 })
 
 test('offer validation rejects quantities, price, deductions, and buyers outside the allowed values', () => {
