@@ -4,7 +4,7 @@ import { Locale, languages, useLocale } from './locale.jsx'
 import { AssistedProfile, Guides, Locator, PrintDocument } from './Access.jsx'
 import { ownerOf, profiles, registerArtisan } from './access.js'
 import { createRoot } from 'react-dom/client'
-import { acceptOffer, buyers, createDraft, inventory, operator, payout, publishProduct, seed, submitOffer } from './purchase.js'
+import { acceptOffer, buyers, createDraft, inventory, isOfferExpired, offerValidityDays, operator, payout, publishProduct, seed, submitOffer } from './purchase.js'
 import { restoreOrders } from './fulfilment.js'
 import Orders from './Orders.jsx'
 import './style.css'
@@ -63,6 +63,7 @@ function OfferForm({ product, available, onSubmit }) {
   return (
     <form className="form offer-form" onSubmit={onSubmit}>
       <h4>{t('Offer for {name}', { name: t(product.name) })}</h4>
+      <p>{t('Offers expire {days} days after sending.', { days: offerValidityDays })}</p>
       <label>{t('Offer quantity')}<input name="quantity" type="number" min="1" max={available} step="1" required /></label>
       <label>{t('Offer price per piece (₹)')}<input name="unitPrice" type="number" min="0.01" step="0.01" defaultValue={product.askingPrice / 100} required /></label>
       <label>{t('Total deduction (₹)')}<input name="deduction" type="number" min="0" step="0.01" defaultValue="0" required /></label>
@@ -72,11 +73,27 @@ function OfferForm({ product, available, onSubmit }) {
 }
 
 function OfferTable({ offers, available, onAccept, money }) {
-  const { t } = useLocale()
+  const { language, t } = useLocale()
+  const [, refreshStatus] = useState(0)
+  const now = Date.now()
+  const nextExpiry = offers.reduce((earliest, offer) =>
+    offer.status === 'pending' && offer.expiresAt > now ? Math.min(earliest, offer.expiresAt) : earliest, Infinity)
+
+  useEffect(() => {
+    if (!Number.isFinite(nextExpiry)) return
+    const delay = Math.max(0, nextExpiry - Date.now())
+    const timer = setTimeout(() => refreshStatus(count => count + 1), Math.min(delay, 2_147_483_647))
+    return () => clearTimeout(timer)
+  }, [nextExpiry, now])
+
+  const dateFormat = new Intl.DateTimeFormat(language + '-IN', { dateStyle: 'medium', timeStyle: 'short' })
   return (
     <div className="offer-list">
       {offers.map(offer => {
-        const status = offer.status === 'accepted' ? 'Accepted' : offer.quantity > available ? 'Insufficient stock' : 'Pending'
+        let status = 'Pending'
+        if (offer.status === 'accepted') status = 'Accepted'
+        else if (isOfferExpired(offer, now)) status = 'Expired'
+        else if (offer.quantity > available) status = 'Insufficient stock'
         return (
           <article key={offer.id} className="offer">
             <div className="card-top"><strong>{t(buyers.find(buyer => buyer.id === offer.buyerId).name)}</strong><span className="badge">{t(status)}</span></div>
@@ -86,6 +103,9 @@ function OfferTable({ offers, available, onAccept, money }) {
               <div><dt>{t('Deduction')}</dt><dd>{money(offer.deduction)}</dd></div>
               <div><dt>{t('Artisan receives')}</dt><dd>{money(payout(offer))}</dd></div>
             </dl>
+            {Number.isFinite(offer.expiresAt) && offer.status === 'pending' && (
+              <p>{t('Offer deadline: {date}', { date: dateFormat.format(offer.expiresAt) })}</p>
+            )}
             {onAccept && status === 'Pending' && <button onClick={() => onAccept(offer.id)}>{t('Accept offer')}</button>}
           </article>
         )

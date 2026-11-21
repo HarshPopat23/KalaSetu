@@ -104,3 +104,5 @@ a:focus-visible, select:focus-visible { outline: 3px solid #ad622b; outline-offs
   #print-document h1 { font-size: 26pt; }
   #print-document dl div { margin-bottom: .5rem; break-inside: avoid; }
 }
+
+.offer-form > p { grid-column: 1 / -1; margin: 0; }

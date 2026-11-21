@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { acceptOffer, buyers, createDraft, inventory, payout, publishProduct, seed, submitOffer } from '../src/purchase.js'
+import { acceptOffer, buyers, createDraft, inventory, isOfferExpired, payout, publishProduct, seed, submitOffer } from '../src/purchase.js'
 
 const first = { id: 'first', buyerId: buyers[0].id, productId: 'baskets', quantity: 5, unitPrice: 32000, deduction: 0 }
 const second = { ...first, id: 'second', buyerId: buyers[1].id, quantity: 10, unitPrice: 33000, deduction: 11000 }
@@ -39,4 +39,28 @@ test('offer validation rejects quantities, price, deductions, and buyers outside
     assert.throws(() => submitOffer(published, { ...first, ...changes }), /deduction/)
   }
   assert.throws(() => submitOffer(published, { ...first, buyerId: 'unknown' }), /buyer/)
+})
+
+test('pending offers expire at the deadline without reserving stock or altering accepted orders', () => {
+  const start = Date.UTC(2030, 9, 10, 9)
+  const draft = publishProduct(seed, 'baskets')
+  const state = submitOffer(draft, first, start)
+  const [offer] = state.offers
+  const deadline = start + 7 * 86_400_000
+  assert.equal(offer.expiresAt, deadline)
+  assert.equal(isOfferExpired(offer, deadline - 1), false)
+  assert.equal(isOfferExpired(offer, deadline), true)
+  assert.throws(() => acceptOffer(state, first.id, deadline), /expired/)
+  assert.equal(state.orders.length, 0)
+  const product = state.products.find(item => item.id === 'baskets')
+  assert.equal(inventory(state, product).available, 12)
+
+  const placed = acceptOffer(state, first.id, deadline - 1)
+  assert.equal(isOfferExpired(placed.offers[0], deadline), false)
+  assert.equal(placed.orders.length, 1)
+  assert.equal(inventory(placed, product).reserved, 5)
+
+  const legacy = { ...state, offers: [{ ...first, status: 'pending' }] }
+  assert.equal(isOfferExpired(legacy.offers[0], deadline), false)
+  assert.equal(acceptOffer(legacy, first.id, deadline).orders.length, 1)
 })
