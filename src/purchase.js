@@ -1,0 +1,76 @@
+export const artisan = { id: 'artisan-1', name: 'Meera Rabari', location: 'Bhuj, Kutch' }
+export const operator = { id: 'operator-1', name: 'Kiran Patel', centre: 'Bhuj Jan Suvidha Kendra' }
+export const buyers = [
+  { id: 'buyer-1', name: 'District Handicrafts Office' },
+  { id: 'buyer-2', name: 'State Craft Emporium' },
+]
+
+export const seed = {
+  products: [
+    { id: 'bandhani', name: 'Bandhani dupattas', category: 'Textiles', stock: 30, askingPrice: 45000, status: 'published' },
+    { id: 'embroidery', name: 'Embroidered pouches', category: 'Embroidery', stock: 18, askingPrice: 32000, status: 'published' },
+    { id: 'baskets', name: 'Handwoven baskets', category: 'Basketry', stock: 12, askingPrice: 28000, status: 'draft' },
+  ],
+  offers: [],
+}
+
+export function payout(offer) {
+  return offer.quantity * offer.unitPrice - offer.deduction
+}
+
+export function inventory(state, product) {
+  const reserved = state.offers
+    .filter(offer => offer.productId === product.id && offer.status === 'accepted')
+    .reduce((sum, offer) => sum + offer.quantity, 0)
+  return { available: product.stock - reserved, reserved }
+}
+
+export function createDraft(state, product) {
+  const name = product.name.trim()
+  const category = product.category.trim()
+  if (!name || !category || !Number.isSafeInteger(product.stock) || product.stock < 1 ||
+      !Number.isSafeInteger(product.askingPrice) || product.askingPrice < 1 ||
+      !Number.isSafeInteger(product.askingPrice * product.stock)) {
+    throw new Error('Enter a product name, craft category, positive whole quantity, and valid price.')
+  }
+  return { ...state, products: [...state.products, { ...product, name, category, status: 'draft' }] }
+}
+
+export function publishProduct(state, productId) {
+  const product = state.products.find(item => item.id === productId)
+  if (product?.status !== 'draft') throw new Error('Choose a draft to publish.')
+  return {
+    ...state,
+    products: state.products.map(item => item.id === productId ? { ...item, status: 'published' } : item),
+  }
+}
+
+export function submitOffer(state, offer) {
+  const product = state.products.find(item => item.id === offer.productId)
+  if (product?.status !== 'published') throw new Error('Choose a published product.')
+  if (!buyers.some(buyer => buyer.id === offer.buyerId)) throw new Error('Choose a demo buyer.')
+  if (!Number.isSafeInteger(offer.quantity) || offer.quantity < 1 ||
+      offer.quantity > inventory(state, product).available) {
+    throw new Error('Enter a whole quantity within the available stock.')
+  }
+  const gross = offer.quantity * offer.unitPrice
+  if (!Number.isSafeInteger(offer.unitPrice) || offer.unitPrice < 1 ||
+      !Number.isSafeInteger(gross) || !Number.isSafeInteger(offer.deduction) ||
+      offer.deduction < 0 || offer.deduction >= gross) {
+    throw new Error('Enter a valid unit price and a deduction smaller than the gross amount.')
+  }
+  return { ...state, offers: [...state.offers, { ...offer, status: 'pending' }] }
+}
+
+export function acceptOffer(state, offerId) {
+  const offer = state.offers.find(item => item.id === offerId)
+  if (offer?.status !== 'pending') throw new Error('Only pending offers can be accepted.')
+  const product = state.products.find(item => item.id === offer.productId)
+  if (!product || offer.quantity > inventory(state, product).available) {
+    throw new Error('The offer exceeds the remaining stock.')
+  }
+  return {
+    ...state,
+    offers: state.offers.map(item => item.id === offerId ? { ...item, status: 'accepted' } : item),
+  }
+}
