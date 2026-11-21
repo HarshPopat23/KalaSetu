@@ -3,6 +3,25 @@ const rows = `
 Language|भाषा|ભાષા
 Main navigation|मुख्य नेविगेशन|મુખ્ય નેવિગેશન
 Docs|दस्तावेज़|દસ્તાવેજો
+Documentation topics|दस्तावेज़ के विषय|દસ્તાવેજોના વિષયો
+Getting started|शुरुआत|શરૂઆત
+Using KalaSetu|कलासेतु का उपयोग|કલાસેતુનો ઉપયોગ
+Orders and payment|ऑर्डर और भुगतान|ઓર્ડર અને ચુકવણી
+What KalaSetu does|कलासेतु क्या करता है|કલાસેતુ શું કરે છે
+Who can use it|इसका उपयोग कौन कर सकता है|તેનો ઉપયોગ કોણ કરી શકે
+Kendra operators|केंद्र संचालक|કેન્દ્ર સંચાલકો
+Buyers and evaluators|खरीदार और मूल्यांकनकर्ता|ખરીદદારો અને મૂલ્યાંકનકર્તાઓ
+Accounts, access, and records|खाते, पहुँच और रिकॉर्ड|ખાતાં, ઍક્સેસ અને રેકોર્ડ
+What happens after publication|प्रकाशन के बाद क्या होता है|પ્રકાશન પછી શું થાય છે
+How to compare offers|ऑफ़र की तुलना कैसे करें|ઑફરની સરખામણી કેવી રીતે કરવી
+Collection, inspection, and payout|संग्रह, निरीक्षण और भुगतान|સંગ્રહ, તપાસ અને ચુકવણી
+After the artisan is paid|कारीगर के भुगतान के बाद|કારીગરને ચુકવણી પછી
+Adjacent documentation pages|पिछले और अगले दस्तावेज़|પાછલાં અને આગળનાં દસ્તાવેજો
+Previous|पिछला|પાછળનું
+Next|अगला|આગળનું
+Documentation page not found|दस्तावेज़ पृष्ठ नहीं मिला|દસ્તાવેજનું પાનું મળ્યું નહીં
+Back to documentation|दस्तावेज़ों पर वापस जाएँ|દસ્તાવેજોમાં પાછા જાઓ
+Resized for KalaSetu|कलासेतु के लिए आकार बदला गया|કલાસેતુ માટે કદ બદલ્યું
 Find Center|केंद्र खोजें|કેન્દ્ર શોધો
 Demo|डेमो|ડેમો
 Listing|उत्पाद सूची|વેચાણ નોંધ

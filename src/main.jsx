@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { flushSync } from 'react-dom'
 import { Locale, languages, useLocale } from './locale.jsx'
-import { AssistedProfile, Guides, Locator, PrintDocument } from './Access.jsx'
+import { AssistedProfile, Locator, PrintDocument } from './Access.jsx'
 import { ownerOf, profiles, registerArtisan } from './access.js'
 import { createRoot } from 'react-dom/client'
 import { acceptOffer, buyers, createDraft, inventory, isOfferExpired, offerValidityDays, operator, payout, publishProduct, seed, submitOffer } from './purchase.js'
@@ -196,7 +196,9 @@ function OfferTable({ offers, available, onAccept, money }) {
 
 function App({ setLanguage }) {
   const { language, t } = useLocale()
-  const [page, setPage] = useState(currentPage)
+  const [route, setRoute] = useState(currentPage)
+  const page = route.startsWith('docs/') ? 'docs' : route
+  const topicSlug = page === 'docs' ? route.slice('docs/'.length) : ''
   const [fontScale, setFontScale] = useState('md')
   const [contrastMode, setContrastMode] = useState(false)
 
@@ -215,7 +217,7 @@ function App({ setLanguage }) {
 
   useEffect(() => {
     const navigate = () => {
-      setPage(currentPage())
+      setRoute(currentPage())
       setFeedback(null)
       setOfferProduct(null)
     }
@@ -308,7 +310,10 @@ function App({ setLanguage }) {
 
   return (
     <>
-      <a href="#main-content" className="skip-link">{t('Skip to main content')}</a>
+      <a href="#main-content" className="skip-link" onClick={event => {
+        event.preventDefault()
+        document.getElementById('main-content')?.focus()
+      }}>{t('Skip to main content')}</a>
       
       {/* Official Tricolor National Ribbon */}
       <div className="gov-flag-strip">
@@ -449,7 +454,7 @@ function App({ setLanguage }) {
             </section>
           )}
 
-          {page === 'docs' && <><Documentation /><Guides print={print} /></>}
+          {page === 'docs' && <Documentation topicSlug={topicSlug} print={print} />}
           {page === 'locator' && <Locator />}
           {isListing && (
             <section className="access-section">
