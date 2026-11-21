@@ -30,3 +30,10 @@ Purchase acceptance reserves stock in this prototype. The people, organizations,
 3. Record the number of pieces that pass inspection. Give a reason for any rejected pieces, which remain held for return.
 4. Check the final payout. It equals the value of the accepted pieces minus their proportional share of the agreed deduction, rounded to the nearest paise. Mark the payout paid to record the simulated payment.
 5. Allocate the accepted pieces to the **KalaSetu Craft Exhibition**. The artisan and operator can view order progress and payout status. The buyer sees resale allocation.
+
+## Rural access
+
+- **Find a Kendra** accepts a village, district, or PIN code. Open a Google Maps search or the CSC locator. After choosing a centre, enter its name and address to open directions. Centre results and directions need internet access. Ask the centre about its services before travelling.
+- **Kendra operator** can register an artisan using sample details and the artisan's consent. Select that profile before creating a listing. Switch to **Artisan** to see that profile's published listings, offers, and orders. Profiles and the selected profile are saved in the current browser. Earlier demo listings still belong to Meera Rabari.
+- **Language** switches the interface and guides between English, Hindi, and Gujarati and saves the selection. The preferred language on a profile is recorded on the registration slip. The operator can change the interface language independently.
+- **Step-by-step guides** covers the visit checklist and instructions for the artisan, operator, and buyer. Print the visit checklist, registration slip, published listing confirmation, purchase order, packing checklist once scheduled, handover receipt after collection, inspection record, or payment acknowledgement after simulated payment. Use the browser print dialog to print or save a PDF.
