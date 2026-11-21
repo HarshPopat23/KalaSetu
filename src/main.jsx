@@ -7,7 +7,12 @@ import { createRoot } from 'react-dom/client'
 import { acceptOffer, buyers, createDraft, inventory, isOfferExpired, offerValidityDays, operator, payout, publishProduct, seed, submitOffer } from './purchase.js'
 import { restoreOrders } from './fulfilment.js'
 import Orders from './Orders.jsx'
+import Documentation, { Instructions } from './Documentation.jsx'
+import { preparePhoto } from './photo.js'
 import './style.css'
+
+const pages = [['docs', 'Docs'], ['locator', 'Find Center'], ['demo', 'Demo'], ['listing', 'Listing']]
+const currentPage = () => location.hash.slice(1)
 
 const storageKey = 'kalasetu-purchase-v1'
 const roles = [
@@ -32,6 +37,7 @@ function ProductCard({ product, state, children, money }) {
   return (
     <article className="card">
       <div className="card-top"><span>{t(product.category)}</span><span className="badge">{t(product.status)}</span></div>
+      {product.photo && <img className="product-photo" src={product.photo} alt={product.name} />}
       <h3>{t(product.name)}</h3>
       <p>{money(product.askingPrice)} {t('per piece')}</p>
       <dl className="stock">
@@ -47,13 +53,45 @@ function ProductCard({ product, state, children, money }) {
 
 function ListingForm({ onSubmit }) {
   const { t } = useLocale()
+  const [photo, setPhoto] = useState('')
+  const [photoError, setPhotoError] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  async function choosePhoto(event) {
+    const input = event.currentTarget
+    const [file] = input.files
+    setPhoto('')
+    setPhotoError('')
+    if (!file) return
+    setLoading(true)
+    try {
+      setPhoto(await preparePhoto(file))
+    } catch (error) {
+      setPhotoError(error.message)
+      input.value = ''
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
-    <form className="form" onSubmit={onSubmit}>
+    <form className="form" onSubmit={event => {
+      if (onSubmit(event, photo)) {
+        event.currentTarget.reset()
+        setPhoto('')
+        setPhotoError('')
+      }
+    }}>
       <label>{t('Product name')}<input name="name" required maxLength={80} /></label>
       <label>{t('Craft category')}<input name="category" required maxLength={50} /></label>
       <label>{t('Quantity')}<input name="stock" type="number" min="1" step="1" required /></label>
       <label>{t('Asking price per piece (₹)')}<input name="askingPrice" type="number" min="0.01" step="0.01" required /></label>
-      <button type="submit">{t('Save draft')}</button>
+      <label>{t('Product photo (optional)')}
+        <input type="file" accept="image/jpeg,image/png,image/webp" onChange={choosePhoto} disabled={loading} />
+      </label>
+      {photo && <img className="product-photo preview-photo" src={photo} alt={t('Product photo preview')} />}
+      {photoError && <p className="feedback error" role="alert">{t(photoError)}</p>}
+      <button type="submit" disabled={loading}>{t('Save draft')}</button>
     </form>
   )
 }
@@ -116,6 +154,16 @@ function OfferTable({ offers, available, onAccept, money }) {
 
 function App({ setLanguage }) {
   const { language, t } = useLocale()
+  const [page, setPage] = useState(currentPage)
+  useEffect(() => {
+    const navigate = () => {
+      setPage(currentPage())
+      setFeedback(null)
+      setOfferProduct(null)
+    }
+    window.addEventListener('hashchange', navigate)
+    return () => window.removeEventListener('hashchange', navigate)
+  }, [])
   const [state, setState] = useState(loadState)
   const [role, setRole] = useState('operator')
   const [feedback, setFeedback] = useState(null)
@@ -137,8 +185,11 @@ function App({ setLanguage }) {
   const current = roles.find(item => item.id === role)
   const isOperator = role === 'operator'
   const isArtisan = role === 'artisan'
-  const products = state.products.filter(product => (isOperator || product.status === 'published') &&
-    (!(isOperator || isArtisan) || ownerOf(state, product)?.id === active.id))
+  const isListing = page === 'listing'
+  const products = state.products.filter(product =>
+    isListing || isOperator || isArtisan
+      ? ownerOf(state, product)?.id === active.id && (isListing || isOperator || product.status === 'published')
+      : product.status === 'published')
 
   function commit(next) {
     setState(next)
@@ -161,20 +212,19 @@ function App({ setLanguage }) {
     return true
   }
 
-  function saveDraft(event) {
+  function saveDraft(event, photo) {
     event.preventDefault()
     const fields = new FormData(event.currentTarget)
     const product = {
       id: crypto.randomUUID(),
       artisanId: active.id,
+      ...(photo && { photo }),
       name: fields.get('name'),
       category: fields.get('category'),
       stock: Number(fields.get('stock')),
       askingPrice: Math.round(Number(fields.get('askingPrice')) * 100),
     }
-    if (update(currentState => createDraft(currentState, product), t('Draft saved for {name}.', { name: active.name }))) {
-      event.currentTarget.reset()
-    }
+    return update(currentState => createDraft(currentState, product), t('Draft saved for {name}.', { name: active.name }))
   }
 
   function sendOffer(event, productId) {
@@ -197,7 +247,10 @@ function App({ setLanguage }) {
     <>
       <div className="app-shell">
         <header className="site-header">
-          <div className="brand"><span aria-hidden="true">K</span> KalaSetu</div>
+          <a href="#" className="brand"><span aria-hidden="true">K</span> KalaSetu</a>
+          <nav className="primary-nav" aria-label={t('Main navigation')}>
+            {pages.map(([id, label]) => <a key={id} href={'#' + id} aria-current={page === id ? 'page' : undefined}>{t(label)}</a>)}
+          </nav>
           <div className="access-actions">
             <span className="badge">{t('College demo · Simulated purchases')}</span>
             <label>{t('Language')}
@@ -208,13 +261,23 @@ function App({ setLanguage }) {
           </div>
         </header>
         <main>
-          <section className="intro" aria-labelledby="title">
-            <h1 id="title">{t('Rural craft purchasing')}</h1>
+          {!pages.some(([id]) => id === page) && <section className="intro">
+            <h1>{t('Rural craft purchasing')}</h1>
             <p>{t('Publish a craft listing at the Kendra, send offers as a buyer, and review them as the artisan.')}</p>
-            <nav className="access-actions" aria-label={t('Access resources')}>
-              <a href="#locator">{t('Find a Kendra')}</a>
-              <a href="#guides">{t('Step-by-step guides')}</a>
-            </nav>
+            <div className="access-actions">
+              <a href="#docs">{t('Read the documentation')}</a>
+              <a href="#demo">{t('Open the demo')}</a>
+            </div>
+          </section>}
+          {page === 'docs' && <><Documentation /><Guides print={print} /></>}
+          {page === 'locator' && <Locator />}
+          {isListing && <section className="access-section">
+            <h1>{t('List your product')}</h1>
+            <Instructions />
+          </section>}
+          {page === 'demo' && <section className="intro">
+            <h1>{t('Demo')}</h1>
+            <Instructions variant="demo" />
             <nav aria-label={t('Demo role')} className="roles">
               {roles.map(item => (
                 <button key={item.id} aria-pressed={role === item.id} onClick={() => {
@@ -224,22 +287,22 @@ function App({ setLanguage }) {
                 }}>{t(item.label)}</button>
               ))}
             </nav>
-          </section>
-          <section aria-labelledby="workspace">
+          </section>}
+          {(isListing || page === 'demo') && <section className="access-section" aria-labelledby="workspace">
             <div className="workspace">
               <div>
-                <h2 id="workspace">{t('{role} workspace', { role: t(current.label) })}</h2>
-                <p>{isArtisan ? active.name + ' · ' + active.location : t(current.name) + (isOperator ? ' · ' + t(operator.centre) : '')}</p>
+                <h2 id="workspace">{isListing ? t('Listing workspace') : t('{role} workspace', { role: t(current.label) })}</h2>
+                <p>{isListing || isArtisan ? active.name + ' · ' + active.location : t(current.name) + (isOperator ? ' · ' + t(operator.centre) : '')}</p>
               </div>
-              <button className="secondary reset" onClick={() => {
+              {!isListing && <button className="secondary reset" onClick={() => {
                 if (window.confirm(t('Reset all profiles, listings, offers, and orders to the demo defaults?'))) {
                   update(() => seed, 'Demo reset.')
                   setOfferProduct(null)
                 }
-              }}>{t('Reset demo')}</button>
+              }}>{t('Reset demo')}</button>}
             </div>
             {feedback && <p className={'feedback' + (feedback.error ? ' error' : '')} role={feedback.error ? 'alert' : 'status'}>{feedback.text}</p>}
-            {(isOperator || isArtisan) && <AssistedProfile people={people} active={active} operatorView={isOperator}
+            {(isListing || isOperator || isArtisan) && <AssistedProfile people={people} active={active} operatorView={isListing || isOperator}
               onSelect={id => {
                 update(currentState => ({ ...currentState, activeArtisanId: id }), 'Artisan profile selected.')
               }}
@@ -250,30 +313,30 @@ function App({ setLanguage }) {
                 ['Artisan ID', active.id], ['Artisan name', active.name], ['Village or locality', active.location],
                 ['Preferred language', languages[active.language ?? 'en']],
               ] })} />}
-            {isOperator && (
-              <details>
+            {isListing && (
+              <details open>
                 <summary>{t('Create a listing for {name}', { name: active.name })}</summary>
-                <ListingForm onSubmit={saveDraft} />
+                <ListingForm key={active.id} onSubmit={saveDraft} />
               </details>
             )}
-            <h2 className="section-title">{t(isArtisan ? 'Listings and offer comparison' : 'Product listings')}</h2>
+            <h2 className="section-title">{t(!isListing && isArtisan ? 'Listings and offer comparison' : 'Product listings')}</h2>
             {products.length === 0 && <p>{t('No listings yet.')}</p>}
-            <div className={isArtisan ? 'products artisan-products' : 'products'}>
+            <div className={!isListing && isArtisan ? 'products artisan-products' : 'products'}>
               {products.map(product => {
                 const { available } = inventory(state, product)
-                const offers = state.offers.filter(offer => offer.productId === product.id && (isArtisan || offer.buyerId === role))
+                const offers = isListing ? [] : state.offers.filter(offer => offer.productId === product.id && (isArtisan || offer.buyerId === role))
                 return (
                   <ProductCard key={product.id} product={product} state={state} money={money}>
-                    {isOperator && product.status === 'draft' && (
+                    {(isListing || isOperator) && product.status === 'draft' && (
                       <button onClick={() => update(currentState => publishProduct(currentState, product.id), t('Published {name}.', { name: t(product.name) }))}>{t('Publish listing')}</button>
                     )}
-                    {isOperator && product.status === 'published' && <button className="secondary" onClick={() => print({
+                    {(isListing || isOperator) && product.status === 'published' && <button className="secondary" onClick={() => print({
                       title: 'Listing confirmation', rows: [
                         ['Listing ID', product.id], ['Product name', t(product.name)], ['Artisan name', active.name],
                         ['Quantity', product.stock], ['Asking price per piece (₹)', money(product.askingPrice)],
                       ],
                     })}>{t('Print listing confirmation')}</button>}
-                    {!isOperator && !isArtisan && (
+                    {!isListing && !isOperator && !isArtisan && (
                       <>
                         {available > 0 && <button className="secondary" aria-expanded={offerProduct === product.id}
                           onClick={() => setOfferProduct(offerProduct === product.id ? null : product.id)}>
@@ -284,18 +347,16 @@ function App({ setLanguage }) {
                     )}
                     {offers.length > 0 && <OfferTable money={money} offers={offers} available={available}
                       onAccept={isArtisan ? id => update(currentState => acceptOffer(currentState, id), 'Offer accepted. Purchase order created and stock reserved.') : undefined} />}
-                    {isArtisan && offers.length === 0 && <p>{t('No offers yet.')}</p>}
+                    {!isListing && isArtisan && offers.length === 0 && <p>{t('No offers yet.')}</p>}
                   </ProductCard>
                 )
               })}
             </div>
-          </section>
-          <Orders state={state} role={role} money={money} active={active} print={print} update={change => {
+          </section>}
+          {page === 'demo' && <Orders state={state} role={role} money={money} active={active} print={print} update={change => {
             const saved = commit(change(state))
             setFeedback(saved ? null : { text: t('Browser storage is unavailable. Changes last until reload.') })
-          }} />
-          <Locator />
-          <Guides print={print} />
+          }} />}
         </main>
         <footer>{t('Demo listings, offers, and orders are saved in this browser.')}</footer>
       </div>

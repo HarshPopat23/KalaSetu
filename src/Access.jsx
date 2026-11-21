@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { mapDirections, mapSearch } from './access.js'
+import CentreMap from './CentreMap.jsx'
 import { languages, useLocale } from './locale.jsx'
 
 export function Locator() {
@@ -12,6 +13,7 @@ export function Locator() {
       <p>{t('Search by village, district, or PIN code. Confirm the centre address, hours, and available services before visiting.')}</p>
       <div className="card locator">
         <label>{t('Village, district, or PIN code')}<input value={locality} maxLength={120} onChange={event => setLocality(event.target.value)} /></label>
+        <CentreMap query={locality} />
         {locality.trim() && <div className="access-actions">
           <a href={mapSearch(locality, 'Jan Suvidha Kendra')} target="_blank" rel="noopener noreferrer">{t('Search Jan Suvidha Kendra on Google Maps')}</a>
           <a href={mapSearch(locality, 'Common Service Centre')} target="_blank" rel="noopener noreferrer">{t('Search Common Service Centres on Google Maps')}</a>
