@@ -81,3 +81,26 @@ footer { padding: 2rem 0; color: #4d594c; font-size: .9rem; }
 .order .card-top h3 { margin: 0; }
 .order-reference { font-size: .88rem; }
 .resale { border-top: 1px solid var(--border); margin-top: 1rem; padding-top: 1rem; }
+
+.access-section { margin-top: 2rem; scroll-margin-top: 1rem; }
+.access-actions { display: flex; flex-wrap: wrap; align-items: end; gap: .65rem 1rem; }
+.access-actions a, .locator > a { color: var(--green); text-underline-offset: .2em; overflow-wrap: anywhere; }
+.access-actions a { display: inline-flex; align-items: center; min-height: 44px; }
+.locator { display: grid; gap: .85rem; }
+.locator p { margin: 0; }
+.locator input { max-width: 38rem; }
+.profile { margin-top: 1rem; }
+.profile details { padding: .65rem; }
+select { max-width: 100%; min-height: 44px; color: inherit; background: #fffdf7; border: 1px solid #898d82; border-radius: .4rem; padding: .4rem; font: inherit; }
+label.consent { display: flex; align-items: center; }
+label.consent input { width: 1.25rem; flex: none; }
+a:focus-visible, select:focus-visible { outline: 3px solid #ad622b; outline-offset: 3px; }
+#print-document { display: none; }
+
+@media print {
+  body:has(#print-document) .app-shell { display: none; }
+  #print-document { display: block; color: black; overflow-wrap: anywhere; }
+  :root { background: white; }
+  #print-document h1 { font-size: 26pt; }
+  #print-document dl div { margin-bottom: .5rem; break-inside: avoid; }
+}
